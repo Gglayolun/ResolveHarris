@@ -1,0 +1,45 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  creationTimestamp: null
+  name: harrisapp
+  namespace: vela-app
+spec:
+  components:
+  - name: harrisapp-harris1-web
+    properties:
+      addRevisionLabel: false
+      cpu: "1"
+      exposeType: ClusterIP
+      image: nginx
+      imagePullPolicy: Always
+      memory: "10"
+      port: 80
+    traits:
+    - properties:
+        replicas: 1
+      type: scaler
+    - properties:
+        class: nginx
+        classInSpec: false
+        http:
+          /: 80
+      type: gateway
+    - properties: null
+      type: storage
+    type: webservice
+  policies:
+  - name: topology-clusters
+    properties:
+      clusters:
+      - local
+    type: topology
+  workflow:
+    steps:
+    - name: deploy
+      properties:
+        ignoreTerraformComponent: false
+        policies:
+        - topology-clusters
+      type: deploy
+status: {}
